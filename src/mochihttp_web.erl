@@ -30,14 +30,13 @@ loop(Req, DocRoot) ->
                     Response = Req:ok({"text/html; charset=utf-8",
                                       [{"Server", "Mochiweb-Test"}],
                                       chunked}),
-                    Response:write_chunk("Static.\n");
+                    Response:write_chunk("Static...\n");
                  ["hibernate" | Rest] ->
                     Reentry = mochiweb_http:reentry({?MODULE, loop}),
                     Response = Req:ok({"text/html; charset=utf-8",
                                       [{"Server", "Mochiweb-Test"}],
                                       chunked}),
-                    Response:write_chunk("Hibernate.\n"),
-                    erlang:send_after(200, self(), "msg"),
+                    Response:write_chunk("Hibernate...\n"),
                     erlang:hibernate(?MODULE, resume, [Req, Rest, Reentry]);
                 ["poll",  Id | Rest] ->
                     Response = Req:ok({"text/html; charset=utf-8",
@@ -73,8 +72,8 @@ feed(Response, N) ->
 resume(Req, Path, Reentry) ->
     receive
         Msg -> Response = Req:ok({"text/html; charset=utf-8",
-                       [{"Server", "Mochiweb-Test"}],
-                       chunked}),
+                                 [{"Server", "Mochiweb-Test"}],
+                                 chunked}),
                Response:write_chunk("Resumed...")
     end,
     Reentry(Req).
