@@ -1,0 +1,9 @@
+%% -*- erlang -*-
+{application, mochihttp,
+ [{description, "mochihttp"},
+  {vsn, "0.1"},
+  {modules, []},
+  {registered, []},
+  {mod, {'mochihttp_app', []}},
+  {env, []},
+  {applications, [kernel, stdlib, crypto]}]}.
