@@ -5,7 +5,7 @@
 
 -module(brain).
 -author("Mochi Media <dev@mochimedia.com>").
--export([start/0, stop/0]).
+-export([start/0, stop/0, get_env/1]).
 
 ensure_started(App) ->
     case application:start(App) of
@@ -28,3 +28,7 @@ start() ->
 %% @doc Stop the brain server.
 stop() ->
     application:stop(brain).
+
+get_env(Name) ->
+    {ok, Value} = application:get_env(?MODULE, Name),
+    Value.
