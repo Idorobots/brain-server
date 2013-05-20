@@ -1,9 +1,9 @@
 %% -*- erlang -*-
-{application, mochihttp,
- [{description, "mochihttp"},
+{application, brain,
+ [{description, "brain"},
   {vsn, "0.1"},
   {modules, []},
   {registered, []},
-  {mod, {'mochihttp_app', []}},
+  {mod, {'brain_app', []}},
   {env, []},
   {applications, [kernel, stdlib, crypto]}]}.

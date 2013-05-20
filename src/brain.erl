@@ -1,9 +1,9 @@
 %% @author Mochi Media <dev@mochimedia.com>
 %% @copyright 2010 Mochi Media <dev@mochimedia.com>
 
-%% @doc mochihttp.
+%% @doc brain.
 
--module(mochihttp).
+-module(brain).
 -author("Mochi Media <dev@mochimedia.com>").
 -export([start/0, stop/0]).
 
@@ -17,14 +17,14 @@ ensure_started(App) ->
 
 
 %% @spec start() -> ok
-%% @doc Start the mochihttp server.
+%% @doc Start the brain server.
 start() ->
-    mochihttp_deps:ensure(),
+    brain_deps:ensure(),
     ensure_started(crypto),
-    application:start(mochihttp).
+    application:start(brain).
 
 
 %% @spec stop() -> ok
-%% @doc Stop the mochihttp server.
+%% @doc Stop the brain server.
 stop() ->
-    application:stop(mochihttp).
+    application:stop(brain).

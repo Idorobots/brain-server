@@ -1,9 +1,9 @@
 %% @author Mochi Media <dev@mochimedia.com>
 %% @copyright 2010 Mochi Media <dev@mochimedia.com>
 
-%% @doc Web server for mochihttp.
+%% @doc Web server for brain.
 
--module(mochihttp_web).
+-module(brain_web).
 -define(CHUNK, <<97:4096>>).
 
 -export([start/1, stop/0, loop/2, resume/3]).
