@@ -8,13 +8,11 @@
 -export([start/1, stop/0]).
 
 %% External API
-%% External API
 start(Options) ->
-    io:format("brain_web"),
     case brain:get_env(backend) of
         mochiweb -> brain_mochi:setup(Options);
         cowboy   -> brain_cowboy:setup(Options);
-        Other    -> io:format("Backend ~w implemented. Using Mochiweb instead.", [Other]),
+        Other    -> io:format("Backend ~w not implemented. Using Mochiweb instead.", [Other]),
                     brain_mochi:setup(Options)
     end.
 
