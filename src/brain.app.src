@@ -6,5 +6,5 @@
   {registered, []},
   {mod, {'brain_app', []}},
   {env, [{chunksize, 512}, % Chunk size in bytes.
-         {backend, mochiweb}]},
+         {backend, cowboy}]},
   {applications, [kernel, stdlib, crypto]}]}.

@@ -10,6 +10,7 @@
 %% External API
 %% External API
 start(Options) ->
+    io:format("brain_web"),
     case brain:get_env(backend) of
         mochiweb -> brain_mochi:setup(Options);
         cowboy   -> brain_cowboy:setup(Options);
