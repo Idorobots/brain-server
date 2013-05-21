@@ -12,7 +12,7 @@ start(Options) ->
     case brain:get_env(backend) of
         mochiweb -> brain_mochi:setup(Options);
         cowboy   -> brain_cowboy:setup(Options);
-        Other    -> io:format("Backend ~w not implemented. Using Mochiweb instead.", [Other]),
+        Other    -> lager:warning("Backend ~w not implemented. Using Mochiweb instead.", [Other]),
                     brain_mochi:setup(Options)
     end.
 

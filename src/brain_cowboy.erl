@@ -3,13 +3,15 @@
 -export([setup/1, teardown/0]).
 
 setup(_Options) -> % TODO Actually use options
+    lager:info("Starting Cowboy server..."),
     application:start(ranch),
     application:start(cowboy),
-    Dispatch = cowboy_router:compile([{'_', [{"/[:path]", brain_cowboy_handler, []}]}]),
-    io:format("Starting listener"),
+    Dispatch = cowboy_router:compile([{'_', [{"/poll/:timeout", brain_cowboy_poll_handler, []},
+                                             {"/:path", brain_cowboy_simple_handler, []}]}]),
     cowboy:start_http(http, 100,
                       [{port, 8080}],
-                      [{env, [{dispatch, Dispatch}]}]).
+                      [{env, [{dispatch, Dispatch}]}]),
+    lager:info("Cowboy started!").
 
 teardown() ->
     application:stop(cowboy).

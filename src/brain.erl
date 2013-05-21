@@ -21,6 +21,7 @@ ensure_started(App) ->
 start() ->
     brain_deps:ensure(),
     ensure_started(crypto),
+    lager:start(),
     application:start(brain).
 
 
