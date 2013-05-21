@@ -1,8 +1,3 @@
-%% @author Mochi Media <dev@mochimedia.com>
-%% @copyright 2010 Mochi Media <dev@mochimedia.com>
-
-%% @doc Web server for brain.
-
 -module(brain_web).
 
 -export([start/1, stop/0]).

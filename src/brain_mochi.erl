@@ -7,7 +7,7 @@ setup(Options) ->
     Chunksize = 8 * brain:get_env(chunksize),
     Chunk = <<97:Chunksize>>,
     Loop = fun (Req) -> loop(Req, Chunk) end,
-    %% Set max connections to 1kk to REALLY stress test the server.
+    %% Set max connections to 1kk to REALLY stress-test the server.
     mochiweb_http:start([{max, 1000000}, {name, ?MODULE}, {loop, Loop} | Options]).
 
 teardown() ->
@@ -55,7 +55,7 @@ feed(Response, Chunk, N) ->
     end,
     feed(Response, Chunk, N).
 
-%% Resumes here after hibertation
+%% Resumes here after hibernation
 resume(Req, _Path, Reentry) ->
     receive
         _ -> Response = Req:ok({"text/html; charset=utf-8",

@@ -2,7 +2,7 @@
 
 -export([setup/1, teardown/0]).
 
-setup(_Options) -> % TODO Actually use options
+setup(Options) ->
     lager:info("Starting Cowboy server..."),
     application:start(ranch),
     application:start(cowboy),
