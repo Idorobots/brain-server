@@ -7,8 +7,9 @@ setup(Options) ->
     Chunksize = 8 * brain:get_env(chunksize),
     Chunk = <<97:Chunksize>>,
     Loop = fun (Req) -> loop(Req, Chunk) end,
-    %% Set max connections to 1kk to REALLY stress-test the server.
-    mochiweb_http:start([{max, 1000000}, {name, ?MODULE}, {loop, Loop} | Options]).
+    mochiweb_http:start([{max, brain:gen_env(max_connections)},
+                         {name, ?MODULE},
+                         {loop, Loop} | Options]).
 
 teardown() ->
     mochiweb_http:stop(?MODULE).

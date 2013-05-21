@@ -8,8 +8,9 @@ setup(Options) ->
     application:start(cowboy),
     Dispatch = cowboy_router:compile([{'_', [{"/poll/:timeout", brain_cowboy_poll_handler, []},
                                              {"/:path", brain_cowboy_simple_handler, []}]}]),
-    cowboy:start_http(http, 100,
-                      [{port, 8080}],
+    Port = proplists:get_value(port, Options),
+    cowboy:start_http(http, brain:get_env(max_connections),
+                      [{port, Port}],
                       [{env, [{dispatch, Dispatch}]}]),
     lager:info("Cowboy started!").
 
