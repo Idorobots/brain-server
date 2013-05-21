@@ -5,6 +5,5 @@
   {modules, []},
   {registered, []},
   {mod, {'brain_app', []}},
-  {env, [{chunksize, 512}, % Chunk size in bytes.
-         {backend, cowboy}]},
+  {env, []},
   {applications, [kernel, stdlib, crypto]}]}.
