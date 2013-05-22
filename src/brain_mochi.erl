@@ -7,7 +7,7 @@ setup(Options) ->
     Chunksize = 8 * brain:get_env(chunksize),
     Chunk = <<97:Chunksize>>,
     Loop = fun (Req) -> loop(Req, Chunk) end,
-    mochiweb_http:start([{max, brain:gen_env(max_connections)},
+    mochiweb_http:start([{max, brain:get_env(max_connections)},
                          {name, ?MODULE},
                          {loop, Loop} | Options]).
 
@@ -20,24 +20,33 @@ loop(Req, Chunk) ->
         Method when Method =:= 'GET'; Method =:= 'HEAD' ->
             case string:tokens(Path, "/") of
                 ["static" | _Rest] ->
+                    lager:info("Received a static/ request!"),
                     Response = Req:ok({"text/html; charset=utf-8",
                                        [{"Server", "Mochiweb-Test"}],
                                        chunked}),
                     Response:write_chunk("Static...\n");
                 ["hibernate" | Rest] ->
+                    lager:info("Received a hibernate/ request!"),
                     Reentry = mochiweb_http:reentry({?MODULE, loop}),
                     Response = Req:ok({"text/html; charset=utf-8",
                                        [{"Server", "Mochiweb-Test"}],
                                        chunked}),
                     Response:write_chunk("Hibernate...\n"),
                     erlang:hibernate(?MODULE, resume, [Req, Rest, Reentry]);
-                ["poll", Id | _Rest] ->
+                ["poll", Timeout | _Rest] ->
+                    lager:info("Received a poll/ request!"),
                     Response = Req:ok({"text/html; charset=utf-8",
                                        [{"Server","Mochiweb-Test"}],
                                        chunked}),
-                    N = try list_to_integer(Id) of Num -> Num catch error:_ -> 5 end,
+                    N = try list_to_integer(Timeout) of
+                            Num -> Num
+                        catch
+                            error:_ -> 5
+                        end,
                     Response:write_chunk(io_lib:format("Polling every ~w seconds ~n", [N])),
                     feed(Response, Chunk, N);
+                ["wspoll", Timeout | _Rest] ->
+                    lager:info("Received a wspoll/ request!");
                 _ ->
                     Req:not_found()
             end;
@@ -54,6 +63,7 @@ feed(Response, Chunk, N) ->
     receive
     after N * 1000 -> Response:write_chunk(Chunk)
     end,
+    lager:info("Sent a chunk of data!"),
     feed(Response, Chunk, N).
 
 %% Resumes here after hibernation
