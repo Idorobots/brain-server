@@ -38,15 +38,26 @@ loop(Req, Chunk) ->
                     Response = Req:ok({"text/html; charset=utf-8",
                                        [{"Server","Mochiweb-Test"}],
                                        chunked}),
-                    N = try list_to_integer(Timeout) of
+                    T = try list_to_integer(Timeout) of
                             Num -> Num
                         catch
                             error:_ -> 5
                         end,
-                    Response:write_chunk(io_lib:format("Polling every ~w seconds ~n", [N])),
-                    feed(Response, Chunk, N);
+                    Response:write_chunk(io_lib:format("Polling every ~p seconds ~n", [T])),
+                    feed(Response, Chunk, T);
                 ["wspoll", Timeout | _Rest] ->
-                    lager:info("Received a wspoll/ request!");
+                    lager:info("Received a wspoll/ request!"),
+                    WsVersion = mochiweb_websocket:upgrade_connection(Req),
+                    Socket = Req:get(socket),
+
+                    T = try list_to_integer(Timeout) of
+                            Num -> Num
+                        catch
+                            error:_ -> 5
+                        end,
+                    Msg = list_to_binary(io_lib:format("Poling every ~p seconds...", [T])),
+                    mochiweb_websocket:send(Socket, Msg, WsVersion),
+                    wsfeed(Socket, Chunk, WsVersion, T);
                 _ ->
                     Req:not_found()
             end;
@@ -59,14 +70,23 @@ loop(Req, Chunk) ->
             Req:respond({501, [], []})
     end.
 
-feed(Response, Chunk, N) ->
-    receive
-    after N * 1000 -> Response:write_chunk(Chunk)
-    end,
-    lager:info("Sent a chunk of data!"),
-    feed(Response, Chunk, N).
+feed(Response, Chunk, T) ->
+    timer:sleep(T*1000),
+    case Response:write_chunk(Chunk) of
+        ok -> lager:info("Sent a chunk of data!"),
+              feed(Response, Chunk, T);
+        _  -> lager:info("Connection closed!")
+    end.
 
-%% Resumes here after hibernation
+wsfeed(Socket, Chunk, WsVersion, T) ->
+    timer:sleep(T*1000),
+    case mochiweb_websocket:send(Socket, Chunk, WsVersion) of
+        ok -> lager:info("Sent a chunk of data!"),
+              wsfeed(Socket, Chunk, WsVersion, T);
+        _  -> lager:info("Connection closed!")
+    end.
+
+%% Process resumes here after hibernation
 resume(Req, _Path, Reentry) ->
     receive
         _ -> Response = Req:ok({"text/html; charset=utf-8",
