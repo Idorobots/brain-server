@@ -12,7 +12,7 @@ init({tcp, http}, Request, _Options) ->
     Req2 = reply(Req, "Polling every " ++ binary_to_list(Timeout) ++ " seconds..."),
     T = binary_to_integer(Timeout) * 1000,
     erlang:send_after(T, self(), {feed, T}),
-    {loop, Req2, Chunk}.
+    {loop, Req2, Chunk, hibernate}.
 
 terminate(_Reason, _Request, _State) ->
     ok.
@@ -22,7 +22,7 @@ info(Message = {feed, Timeout}, Request, State) ->
     Chunk = State,
     feed(Request, binary_to_list(Chunk)),
     erlang:send_after(Timeout, self(), Message),
-    {loop, Request, State};
+    {loop, Request, State, hibernate};
 
 info(Message, Request, State) ->
     lager:warning("Unhandled message: ~p", [Message]),

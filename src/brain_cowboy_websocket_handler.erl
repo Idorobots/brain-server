@@ -19,15 +19,15 @@ websocket_init(_Transport, Request, _Options) ->
     Chunk = <<97:Chunksize>>,
     {Timeout, Req} = cowboy_req:binding(timeout, Request),
     erlang:send_after(100, self(), {welcome, Timeout}),
-    {ok, Req, Chunk}.
+    {ok, Req, Chunk, hibernate}.
 
 websocket_handle({text, Msg}, Request, State) ->
     lager:info("Received a chunk of data: ~p", [Msg]),
-    {ok, Request, State};
+    {ok, Request, State, hibernate};
 
 websocket_handle(Frame, Request, State) ->
     lager:warning("Received an unhandled frame type: ~p", [Frame]),
-    {ok, Request, State}.
+    {ok, Request, State, hibernate}.
 
 websocket_info({welcome, Timeout}, Request, State) ->
     T = binary_to_integer(Timeout) * 1000,
@@ -41,9 +41,9 @@ websocket_info({feed, Timeout}, Request, State) ->
 
 websocket_info(Info, Request, State) ->
     lager:warning("Unhandled message: ~p", [Info]),
-    {ok, Request, State}.
+    {ok, Request, State, hibernate}.
 
 %% Internal functions
 feed(Request, State, Message) ->
     lager:info("Sent a chunk of data!"),
-    {reply, {text, Message}, Request, State}.
+    {reply, {text, Message}, Request, State, hibernate}.
