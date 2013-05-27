@@ -4,6 +4,7 @@
 start() ->
     crypto:start(),
     lager:start(),
+    monitor:start(),
     application:start(brain).
 
 stop() ->
