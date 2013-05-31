@@ -1,0 +1,3 @@
+*.beam
+*~
+data/add_dots.sh
